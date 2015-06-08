@@ -54,6 +54,14 @@
 
 LOCAL_PATH:= $(call my-dir)
 
+ifeq ($(TARGET_ARCH),arm)
+  vixl_use_clang := false
+  vixl_default_clang := false
+else
+  vixl_use_clang := true
+  vixl_default_clang :=
+endif
+
 vixl_include_files := $(LOCAL_PATH)/src/ \
 
 vixl_src_files := \
@@ -114,7 +122,7 @@ ifeq ($(ART_COVERAGE), true)
 endif
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -128,7 +136,7 @@ LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -143,7 +151,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -158,7 +166,7 @@ LOCAL_MULTILIB := both
 include $(BUILD_HOST_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -171,6 +179,39 @@ LOCAL_MODULE := libvixld
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 LOCAL_MULTILIB := both
 include $(BUILD_HOST_SHARED_LIBRARY)
+
+# Static libraries for host
+include $(CLEAR_VARS)
+LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CPP_EXTENSION := .cc
+LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
+LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
+LOCAL_NATIVE_COVERAGE := $(VIXL_COVERAGE)
+LOCAL_C_INCLUDES := $(vixl_include_files)
+LOCAL_SRC_FILES :=  $(vixl_src_files)
+LOCAL_STATIC_LIBRARIES := liblog
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE := libvixl
+LOCAL_SANITIZE_RECOVER := shift-exponent
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+LOCAL_MULTILIB := both
+include $(BUILD_HOST_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CPP_EXTENSION := .cc
+LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
+LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
+LOCAL_NATIVE_COVERAGE := $(VIXL_COVERAGE)
+LOCAL_C_INCLUDES := $(vixl_include_files)
+LOCAL_SRC_FILES :=  $(vixl_src_files)
+LOCAL_STATIC_LIBRARIES := liblog
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE := libvixld
+LOCAL_SANITIZE_RECOVER := shift-exponent
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+LOCAL_MULTILIB := both
+include $(BUILD_HOST_STATIC_LIBRARY)
 
 
 ######### VIXL HOST TESTS #########
@@ -179,7 +220,7 @@ include $(BUILD_HOST_SHARED_LIBRARY)
 # To run all the tests: vixl-test-runner --run_all
 #
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+LOCAL_CLANG := $(vixl_use_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
