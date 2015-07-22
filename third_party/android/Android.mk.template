@@ -58,40 +58,14 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-ifeq ($(TARGET_ARCH),arm)
-  vixl_use_clang := false
-  vixl_default_clang := false
-else
-  vixl_use_clang := true
-  vixl_default_clang :=
-endif
-
 vixl_root := $(LOCAL_PATH)/
 vixl_include_files := $(vixl_root)/src/
 
 vixl_src_files := \
-  src/vixl/a64/assembler-a64.cc \
-  src/vixl/a64/cpu-a64.cc \
-  src/vixl/a64/debugger-a64.cc \
-  src/vixl/a64/decoder-a64.cc \
-  src/vixl/a64/disasm-a64.cc \
-  src/vixl/a64/instructions-a64.cc \
-  src/vixl/a64/instrument-a64.cc \
-  src/vixl/a64/logic-a64.cc \
-  src/vixl/a64/macro-assembler-a64.cc \
-  src/vixl/a64/simulator-a64.cc \
-  src/vixl/code-buffer.cc \
-  src/vixl/compiler-intrinsics.cc \
-  src/vixl/utils.cc
+  {vixl_sources}
 
 vixl_test_files := \
-  test/test-assembler-a64.cc \
-  test/test-disasm-a64.cc \
-  test/test-fuzz-a64.cc \
-  test/test-invalset.cc \
-  test/test-runner.cc \
-  test/test-simulator-a64.cc \
-  test/test-utils-a64.cc
+  {vixl_test_files}
 
 vixl_cpp_flags := \
   -DUSE_SIMULATOR \
@@ -127,7 +101,7 @@ ifeq ($(ART_COVERAGE), true)
 endif
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -137,11 +111,12 @@ LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libvixl
+LOCAL_SANITIZE_RECOVER := shift-exponent
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -151,12 +126,13 @@ LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libvixld
+LOCAL_SANITIZE_RECOVER := shift-exponent
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_use_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -166,12 +142,13 @@ LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libvixl
+LOCAL_SANITIZE_RECOVER := shift-exponent
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 LOCAL_MULTILIB := both
 include $(BUILD_HOST_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_use_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -181,13 +158,14 @@ LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libvixld
+LOCAL_SANITIZE_RECOVER := shift-exponent
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 LOCAL_MULTILIB := both
 include $(BUILD_HOST_SHARED_LIBRARY)
 
 # Static libraries for host
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -203,7 +181,7 @@ LOCAL_MULTILIB := both
 include $(BUILD_HOST_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_default_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -225,7 +203,7 @@ include $(BUILD_HOST_STATIC_LIBRARY)
 # To run all the tests: vixl-test-runner --run_all
 #
 include $(CLEAR_VARS)
-LOCAL_CLANG := $(vixl_use_clang)
+LOCAL_CLANG := true
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
@@ -236,6 +214,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_HOST_ARCH := x86_64
 LOCAL_FORCE_STATIC_EXECUTABLE := true
 LOCAL_MODULE := vixl-test-runner
+LOCAL_SANITIZE_RECOVER := shift-exponent
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_HOST_EXECUTABLE)
 
