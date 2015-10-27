@@ -94,13 +94,15 @@ vixl_test_files := \
   test/test-utils-a64.cc
 
 vixl_cpp_flags := \
-  -DUSE_SIMULATOR \
+  -DVIXL_INCLUDE_SIMULATOR \
+  -DVIXL_GENERATE_SIMULATOR_INSTRUCTIONS_VALUE=0 \
   -Wall \
   -Wextra \
   -Werror \
   -fdiagnostics-show-option \
   -Wredundant-decls \
   -Wunreachable-code \
+  -Wmissing-noreturn \
   -pedantic \
   -std=c++11 \
 
@@ -131,7 +133,6 @@ LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_release)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
-LOCAL_CPPFLAGS_arm64 := -UUSE_SIMULATOR
 LOCAL_C_INCLUDES := $(vixl_include_files)
 LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
@@ -145,7 +146,6 @@ LOCAL_CLANG := $(vixl_default_clang)
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CPPFLAGS := $(vixl_cpp_flags_debug)
 LOCAL_CLANG_CFLAGS := -Wimplicit-fallthrough
-LOCAL_CPPFLAGS_arm64 := -UUSE_SIMULATOR
 LOCAL_C_INCLUDES := $(vixl_include_files)
 LOCAL_SRC_FILES :=  $(vixl_src_files)
 LOCAL_SHARED_LIBRARIES := liblog
